@@ -1,4 +1,4 @@
-import observer from './modules/intersectionObserver.js';
+// import observer from './modules/intersectionObserver.js';
 
 window.onload = () => {
     // Dom elements
