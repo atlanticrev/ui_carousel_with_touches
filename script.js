@@ -1,5 +1,3 @@
-// import observer from './modules/intersectionObserver.js';
-
 /*
 * @todo Появляется дерганье при последовательности действий:
 *   mousedown -> mouseup -> mousedown -> mousemove
@@ -19,10 +17,8 @@ window.onload = () => {
 
     // Dom elements
     const slidesContainer = document.querySelector('.slider-content');
-    const viewport = slidesContainer.parentElement;
-    const slides = slidesContainer.querySelectorAll('.slide');
-
-    // observer(viewport, slides);
+    // const viewport = slidesContainer.parentElement;
+    // const slides = slidesContainer.querySelectorAll('.slide');
 
     // Slider
     const VELOCITY_FIX = 16.999;
@@ -33,6 +29,7 @@ window.onload = () => {
     let startXPos = null;
     let currentXPos = null;
 
+    // Offsets
     let currentOffset = 0;
     let lastOffset = 0;
 
@@ -50,13 +47,14 @@ window.onload = () => {
     function animation() {
         if (!isAnimate)
             return;
-
         // Применить трение, для остановки движения
         let velocityWithFriction = currentVelocity *= FRICTION;
         logging();
+        // Остановить движение при очень маленькой скорости
         if (Math.abs(velocityWithFriction) < VELOCITY_BOTTOM_THRESHOLD) {
             isAnimate = false;
         }
+        // Отобразить визульно вычисления
         slidesContainer.style.setProperty('--offset', `${(lastOffset += velocityWithFriction)}px`);
         requestAnimationFrame(animation);
     }
@@ -75,9 +73,11 @@ window.onload = () => {
 
     slidesContainer.ontouchmove = (e) => {
         currentTime = Date.now();
+        // Общее время движения
         offsetTime = currentTime - startTime;
 
         currentXPos = e.changedTouches[0].clientX;
+        // Перемещение относительно прошлого смещения координаты
         currentOffset = lastOffset + currentXPos - startXPos;
 
         // Как передать нужную скорость в rAF?
@@ -90,7 +90,6 @@ window.onload = () => {
     slidesContainer.ontouchend = (e) => {
         // Определить мгновенную скорость в момент снятия touch
         lastOffset = currentOffset;
-        // logging();
         animation();
     };
 
