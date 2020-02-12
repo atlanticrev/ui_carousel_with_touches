@@ -4,10 +4,6 @@
 *
 * @todo Определить границы слайдера
 *
-* @todo Сбрасывать скорость при смене направления, потому что
-*   не правильно плюсовать скорость по новому направлению к накопленной
-*   скорости старого направления
-*
 * @todo Докрутка слайдера, установка слайда точно во вьюпорте
 *
 * @todo При движении и долгой остановке в конце не двигать слайдер по инерции (с накопленной скоростью)
@@ -21,7 +17,7 @@ window.onload = () => {
     // const slides = slidesContainer.querySelectorAll('.slide');
 
     // Slider
-    const VELOCITY_FIX = 25;
+    const VELOCITY_FIX = 16.999;
     const VELOCITY_BOTTOM_THRESHOLD = 1;
     const FRICTION = 0.95;
 
@@ -29,6 +25,7 @@ window.onload = () => {
     let startXPos = null;
     let currentXPos = null;
     let offsetXPos = 0;
+    let prevXPos = 0;
 
     // Offsets
     let currentOffset = 0;
@@ -38,26 +35,30 @@ window.onload = () => {
     let startTime = 0;
     let currentTime = 0;
     let offsetTime = 0;
+    let prevTime = 0;
 
     // Velocity
-    let startVelocity = 0;
     let currentVelocity = 0;
 
     let isAnimate = false;
 
     function animation() {
+
         if (!isAnimate)
             return;
+
         // Применить трение, для остановки движения
         let velocityWithFriction = currentVelocity *= FRICTION;
-        // logging();
+
         // Остановить движение при очень маленькой скорости
         if (Math.abs(velocityWithFriction) < VELOCITY_BOTTOM_THRESHOLD) {
             isAnimate = false;
         }
+
         // Отобразить визульно вычисления
         slidesContainer.style.setProperty('--offset', `${(currentOffset = lastOffset += velocityWithFriction)}px`);
         requestAnimationFrame(animation);
+
     }
 
     function logging() {
@@ -78,11 +79,21 @@ window.onload = () => {
         // При смене направления скорости?
 
         currentTime = Date.now();
+        currentXPos = e.changedTouches[0].clientX;
+
+        currentVelocity = ( currentXPos - prevXPos ) / (currentTime - prevTime) * VELOCITY_FIX;
+        console.log(currentVelocity);
+
+        prevTime = currentTime;
+        prevXPos = currentXPos;
+
         // Общее время движения
         offsetTime = currentTime - startTime;
 
         // Текущая координата в системе координат viewport-a
-        currentXPos = e.changedTouches[0].clientX;
+        // currentXPos = e.changedTouches[0].clientX;
+        // console.log(currentXPos - prevXPos);
+        // prevXPos = currentXPos;
 
         // Смещение относительно стартовой точки в начале движения
         offsetXPos = currentXPos - startXPos;
@@ -92,7 +103,7 @@ window.onload = () => {
 
         // Как передать нужную скорость в rAF?
         // Сколько пикселей за миллисекунду
-        currentVelocity = ( offsetXPos ) / offsetTime * VELOCITY_FIX;
+        // currentVelocity = ( offsetXPos ) / offsetTime * VELOCITY_FIX;
         slidesContainer.style.setProperty('--offset', `${currentOffset}px`);
     };
 
@@ -101,7 +112,7 @@ window.onload = () => {
 
         lastOffset = currentOffset;
         // Если набрали достаточную скорость, то анимируем
-        if (Math.abs(currentVelocity) >= 15) {
+        if (Math.abs(currentVelocity) >= 5) {
             isAnimate = true;
             animation();
         }
