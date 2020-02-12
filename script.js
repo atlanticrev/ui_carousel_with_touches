@@ -98,7 +98,9 @@ window.onload = () => {
 
     slidesContainer.ontouchend = (e) => {
         // Определить мгновенную скорость в момент снятия touch
+
         lastOffset = currentOffset;
+        // Если набрали достаточную скорость, то анимируем
         if (Math.abs(currentVelocity) >= 15) {
             isAnimate = true;
             animation();
