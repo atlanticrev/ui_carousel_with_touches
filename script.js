@@ -19,6 +19,7 @@ window.onload = () => {
     // Slider
     const VELOCITY_FIX = 16.999;
     const VELOCITY_BOTTOM_THRESHOLD = 1;
+    const VELOCITY_THRESHOLD_FOR_ANIMATE = 5;
     const FRICTION = 0.95;
 
     // Coordinates
@@ -68,54 +69,48 @@ window.onload = () => {
     }
 
     slidesContainer.ontouchstart = (e) => {
+
         // Прекратить текущую анимацию
         isAnimate = false;
         startTime = Date.now();
+
         // Стартовая координата в системе координат viewport-a
         startXPos = e.changedTouches[0].clientX;
+
     };
 
     slidesContainer.ontouchmove = (e) => {
-        // При смене направления скорости?
 
         currentTime = Date.now();
         currentXPos = e.changedTouches[0].clientX;
 
+        // Как передать нужную скорость в rAF?
+
+        // Мгновенная скорость для каждого вызова обработчика touchmove
+        // Скорость в пикселях за миллисекунду
         currentVelocity = ( currentXPos - prevXPos ) / (currentTime - prevTime) * VELOCITY_FIX;
         console.log(currentVelocity);
 
         prevTime = currentTime;
         prevXPos = currentXPos;
 
-        // Общее время движения
-        offsetTime = currentTime - startTime;
-
-        // Текущая координата в системе координат viewport-a
-        // currentXPos = e.changedTouches[0].clientX;
-        // console.log(currentXPos - prevXPos);
-        // prevXPos = currentXPos;
-
-        // Смещение относительно стартовой точки в начале движения
-        offsetXPos = currentXPos - startXPos;
-
         // Перемещение относительно прошлого положения координаты
-        currentOffset = lastOffset + offsetXPos;
+        currentOffset = lastOffset + ( currentXPos - startXPos );
 
-        // Как передать нужную скорость в rAF?
-        // Сколько пикселей за миллисекунду
-        // currentVelocity = ( offsetXPos ) / offsetTime * VELOCITY_FIX;
         slidesContainer.style.setProperty('--offset', `${currentOffset}px`);
+
     };
 
     slidesContainer.ontouchend = (e) => {
-        // Определить мгновенную скорость в момент снятия touch
 
         lastOffset = currentOffset;
+
         // Если набрали достаточную скорость, то анимируем
-        if (Math.abs(currentVelocity) >= 5) {
+        if (Math.abs(currentVelocity) >= VELOCITY_THRESHOLD_FOR_ANIMATE) {
             isAnimate = true;
             animation();
         }
+
     };
 
 };
