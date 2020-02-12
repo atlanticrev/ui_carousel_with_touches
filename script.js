@@ -72,7 +72,7 @@ window.onload = () => {
 
         // Прекратить текущую анимацию
         isAnimate = false;
-        startTime = Date.now();
+        startTime = performance.now();
 
         // Стартовая координата в системе координат viewport-a
         startXPos = e.changedTouches[0].clientX;
@@ -81,7 +81,7 @@ window.onload = () => {
 
     slidesContainer.ontouchmove = (e) => {
 
-        currentTime = Date.now();
+        currentTime = performance.now();
         currentXPos = e.changedTouches[0].clientX;
 
         // Как передать нужную скорость в rAF?
