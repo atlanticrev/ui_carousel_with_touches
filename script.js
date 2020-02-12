@@ -60,8 +60,8 @@ window.onload = () => {
     }
 
     function logging() {
-        console.log('x-offset ->', currentXPos - startXPos);
-        console.log('t-offset ->', offsetTime);
+        // console.log('x-offset ->', currentXPos - startXPos);
+        // console.log('t-offset ->', offsetTime);
         console.log('v-current ->', currentVelocity);
     }
 
